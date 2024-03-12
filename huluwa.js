@@ -37,6 +37,7 @@ const AK = '00670fb03584fbf44dd6b136e534f495';
 const SK = '0d65f24dbe2bc1ede3c3ceeb96ef71bb';
 
 let sendMessage = [];
+let winRecordMessage = [];
 
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -208,8 +209,8 @@ async function autoSubmit(appId, token) {
         }
         const realName = res1.data.realName;
         const phone = res1.data.phone;
-        console.log(`当前用户[${phone}]`);
-        sendMessage.push(`当前用户[${phone}]`);
+        console.log(`当前用户[${realName}]-[${phone}]`);
+        sendMessage.push(`当前用户[${realName}]-[${phone}]`);
 
         const res2 = await getChannelActivity(channelId, token);
         if (res2.code != '10000') {
@@ -243,6 +244,49 @@ async function autoSubmit(appId, token) {
     }
 }
 
+async function getWinRecord(appId, token) {
+
+    const userInfo = await getUserInfo(appId, token);
+    if (userInfo.code != '10000') {
+        console.log(userInfo.message);
+        winRecordMessage.push(userInfo.message);
+        return;
+    }
+    const realName = userInfo.data.realName;
+    const phone = userInfo.data.phone;
+    console.log(`当前用户[${realName}]-[${phone}]`);
+    winRecordMessage.push(`当前用户[${realName}]-[${phone}]`);
+
+    const url = "/front-manager/api/customer/promotion/queryLotteryRecord"
+
+    const method = "post"
+
+    // const data = {"page": {"pageNo": 1, "pageSize": 20}}
+    const data = {"page": {"pageNo": 1, "pageSize": 20}}
+
+    const headers = buildHeader(method, url, JSON.stringify(data))
+
+    headers['X-access-token'] = token
+
+
+    let ret;
+    await axios(HOST + url, {
+        method,
+        data,
+        headers
+    }).then(res => res.data).then(res => {
+        ret = res.data.list;
+    })
+
+    if (ret.length === 0) {
+        console.log("没有中奖记录")
+        return "没有中奖记录"
+    }
+
+    return JSON.stringify(ret)
+
+}
+
 async function main() {
     const XLTH_COOKIE_ARR = process.env.XLTH_COOKIE; // 新联惠购
     const GLYP_COOKIE_ARR = process.env.GLYP_COOKIE; // 贵旅优品
@@ -254,6 +298,21 @@ async function main() {
     const YLQX_COOKIE_ARR = process.env.YLQX_COOKIE; // 驿路黔寻
 
     if (XLTH_COOKIE_ARR) {
+        console.log("新联惠购查询订单开始")
+        winRecordMessage.push("新联惠购查询订单开始")
+        for (let [index, item] of XLTH_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let xlth_ret = await getWinRecord(XLTH_APPID, item);
+            winRecordMessage.push(xlth_ret)
+            console.log(xlth_ret)
+            await delay(1000);
+        }
+        console.log('新联惠购查询订单结束\n');
+        winRecordMessage.push('新联惠购查询订单结束\n');
+
+        //********************************************
+
         console.log('新联惠购预约开始');
         sendMessage.push('新联惠购预约开始');
         for (let [index, item] of XLTH_COOKIE_ARR.split(SPLIT).entries()) {
@@ -267,6 +326,22 @@ async function main() {
     }
 
     if (GLYP_COOKIE_ARR) {
+
+        console.log("贵旅优品查询订单开始")
+        winRecordMessage.push("贵旅优品查询订单开始")
+        for (let [index, item] of GLYP_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let glyp_ret = await getWinRecord(GLYP_APPID, item);
+            winRecordMessage.push(glyp_ret)
+            console.log(glyp_ret)
+            await delay(1000);
+        }
+        console.log('贵旅优品查询订单结束\n');
+        winRecordMessage.push('贵旅优品查询订单结束\n');
+
+        //********************************************
+
         console.log('贵旅优品预约开始');
         sendMessage.push('贵旅优品预约开始');
         for (let [index, item] of GLYP_COOKIE_ARR.split(SPLIT).entries()) {
@@ -280,6 +355,22 @@ async function main() {
     }
 
     if (KGLG_COOKIE_ARR) {
+
+        console.log("空港乐购查询订单开始")
+        winRecordMessage.push("空港乐购查询订单开始")
+        for (let [index, item] of KGLG_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let kglg_ret = await getWinRecord(KGLG_APPID, item);
+            winRecordMessage.push(kglg_ret)
+            console.log(kglg_ret)
+            await delay(1000);
+        }
+        console.log('空港乐购查询订单结束\n');
+        winRecordMessage.push('空港乐购查询订单结束\n');
+
+        //********************************************
+
         console.log('空港乐购预约开始');
         sendMessage.push('新联惠购预约开始');
         for (let [index, item] of KGLG_COOKIE_ARR.split(SPLIT).entries()) {
@@ -293,6 +384,21 @@ async function main() {
     }
 
     if (HLQG_COOKIE_ARR) {
+        console.log("航旅黔购查询订单开始")
+        winRecordMessage.push("航旅黔购查询订单开始")
+        for (let [index, item] of HLQG_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let hlqg_ret = await getWinRecord(HLQG_APPID, item);
+            winRecordMessage.push(hlqg_ret)
+            console.log(hlqg_ret)
+            await delay(1000);
+        }
+        console.log('航旅黔购查询订单结束\n');
+        winRecordMessage.push('航旅黔购查询订单结束\n');
+
+        //********************************************
+
         console.log('航旅黔购预约开始');
         sendMessage.push('新联惠购预约开始');
         for (let [index, item] of HLQG_COOKIE_ARR.split(SPLIT).entries()) {
@@ -306,6 +412,22 @@ async function main() {
     }
 
     if (ZHCS_COOKIE_ARR) {
+
+        console.log("遵行出山查询订单开始")
+        winRecordMessage.push("遵行出山查询订单开始")
+        for (let [index, item] of ZHCS_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let zhcs_ret = await getWinRecord(ZHCS_APPID, item);
+            winRecordMessage.push(zhcs_ret)
+            console.log(zhcs_ret)
+            await delay(1000);
+        }
+        console.log('遵行出山查询订单结束\n');
+        winRecordMessage.push('遵行出山查询订单结束\n');
+
+        //********************************************
+
         console.log('遵行出山预约开始');
         sendMessage.push('新联惠购预约开始');
         for (let [index, item] of ZHCS_COOKIE_ARR.split(SPLIT).entries()) {
@@ -319,6 +441,22 @@ async function main() {
     }
 
     if (GYQP_COOKIE_ARR) {
+
+        console.log("贵盐黔品查询订单开始")
+        winRecordMessage.push("贵盐黔品查询订单开始")
+        for (let [index, item] of GYQP_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let gyqp_ret = await getWinRecord(GYQP_APPID, item);
+            winRecordMessage.push(gyqp_ret)
+            console.log(gyqp_ret)
+            await delay(1000);
+        }
+        console.log('贵盐黔品查询订单结束\n');
+        winRecordMessage.push('贵盐黔品查询订单结束\n');
+
+        //********************************************
+
         console.log('贵盐黔品预约开始');
         sendMessage.push('贵盐黔品预约开始');
         for (let [index, item] of GYQP_COOKIE_ARR.split(SPLIT).entries()) {
@@ -332,6 +470,21 @@ async function main() {
     }
 
     if (LLSC_COOKIE_ARR) {
+        console.log("乐旅商城查询订单开始")
+        winRecordMessage.push("乐旅商城查询订单开始")
+        for (let [index, item] of LLSC_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let llsc_ret = await getWinRecord(LLSC_APPID, item);
+            winRecordMessage.push(llsc_ret)
+            console.log(llsc_ret)
+            await delay(1000);
+        }
+        console.log('乐旅商城查询订单结束\n');
+        winRecordMessage.push('乐旅商城查询订单结束\n');
+
+        //********************************************
+
         console.log('乐旅商城预约开始');
         sendMessage.push('乐旅商城预约开始');
         for (let [index, item] of LLSC_COOKIE_ARR.split(SPLIT).entries()) {
@@ -345,6 +498,22 @@ async function main() {
     }
 
     if (YLQX_COOKIE_ARR) {
+
+        console.log("驿路黔寻查询订单开始")
+        winRecordMessage.push("驿路黔寻查询订单开始")
+        for (let [index, item] of YLQX_COOKIE_ARR.split(SPLIT).entries()) {
+            console.log(`----第${index + 1}个号----`);
+            winRecordMessage.push(`----第${index + 1}个号----`);
+            let ylqx_ret = await getWinRecord(YLQX_APPID, item);
+            winRecordMessage.push(ylqx_ret)
+            console.log(ylqx_ret)
+            await delay(1000);
+        }
+        console.log('驿路黔寻查询订单结束\n');
+        winRecordMessage.push('驿路黔寻查询订单结束\n');
+
+        //********************************************
+
         console.log('驿路黔寻预约开始');
         sendMessage.push('驿路黔寻预约开始');
         for (let [index, item] of YLQX_COOKIE_ARR.split(SPLIT).entries()) {
@@ -358,6 +527,8 @@ async function main() {
     }
 
     await notify.sendNotify(`葫芦娃预约`, sendMessage.join('\n'), {}, '\n\n本通知 By：一泽');
+    await notify.sendNotify(`葫芦娃预约结果`, winRecordMessage.join('\n'), {}, '\n\n本通知 By：kaixin');
+
 }
 
-main();
+main()

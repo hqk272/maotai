@@ -1,5 +1,8 @@
 # Notice
 
+该项目fork于https://github.com/yize8888/maotai
+
+我不是作者，我只是修改了一下
 ```
 2023/06/20
 这个项目是从2023年6月开始的，感谢期间捐赠过我的所有人。
@@ -19,11 +22,10 @@ Thanks to everyone who supported me before, this repository is currently suspend
 
 在线预约平台正在开发新版本中，原有平台已废弃，请大家敬请期待
 
-~~推荐一个在线预约平台：[https://github.com/bxgh01/maotai.git](https://github.com/bxgh01/maotai.git)（支持葫芦娃+i茅台在线预约）~~
 
 ## 拉库指令
 
-青龙拉库指令 `ql repo https://github.com/yize8888/maotai.git`
+青龙拉库指令 `ql repo https://github.com/ubadly/maotai.git`
 
 ## 环境变量
 
